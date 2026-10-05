@@ -1,0 +1,32 @@
+<!-- 강의안 잠금(연수 번호). 정적 파일이라 소스를 보면 번호가 보이는 클라이언트 게이트입니다 — 지나가다 들어오는 접근만 거릅니다. -->
+<div id="deckGate" style="position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:#111;padding:20px">
+  <form id="deckGateForm" style="width:100%;max-width:340px;background:#fff;border-radius:20px;padding:28px;text-align:center;font-family:var(--fu)">
+    <h3 style="margin:0 0 6px;font-size:20px;color:#111">연수 번호를 입력해 주세요</h3>
+    <p style="margin:0 0 20px;font-size:14px;color:#707072">강의안은 연수 참가자용이에요.</p>
+    <input id="deckGateInput" type="password" inputmode="numeric" autocomplete="off" placeholder="번호 입력" aria-label="연수 번호"
+      style="width:100%;height:48px;border:1px solid #cacacb;border-radius:20px;padding:0 16px;font:inherit;font-size:18px;text-align:center;letter-spacing:.3em">
+    <p id="deckGateErr" style="display:none;margin:8px 0 0;color:#c0392b;font-size:13px">번호가 맞지 않아요.</p>
+    <button type="submit" style="width:100%;margin-top:20px;height:44px;border:0;border-radius:999px;background:#111;color:#fff;font:inherit;font-weight:700;cursor:pointer">확인</button>
+  </form>
+</div>
+<script>
+(function () {
+  var CODE = '1111', KEY = 'deckUnlocked';
+  var qs = new URLSearchParams(location.search);
+  if (qs.get('code') === CODE) { try { sessionStorage.setItem(KEY, '1'); } catch (e) {} }
+  function unlocked() { try { return sessionStorage.getItem(KEY) === '1'; } catch (e) { return qs.get('code') === CODE; } }
+  if (unlocked() || window.top !== window.self) return;
+  var gate = document.getElementById('deckGate'), form = document.getElementById('deckGateForm'),
+      input = document.getElementById('deckGateInput'), err = document.getElementById('deckGateErr');
+  document.documentElement.style.overflow = 'hidden';
+  window.__deckLocked = true;
+  gate.style.display = 'flex'; input.focus();
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (input.value.trim() !== CODE) { err.style.display = 'block'; input.select(); return; }
+    try { sessionStorage.setItem(KEY, '1'); } catch (e2) {}
+    window.__deckLocked = false;
+    gate.style.display = 'none'; document.documentElement.style.overflow = '';
+  });
+})();
+</script>
