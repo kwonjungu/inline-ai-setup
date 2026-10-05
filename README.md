@@ -5,6 +5,11 @@
 초등 선생님이 실제 학교 문서로 inline AI를 써 보는 연수 자료입니다.
 마지막에는 같은 일을 **클로드 코워크**로 하는 방법까지 소개합니다.
 
+## inline AI 설치
+
+- 내려받기: https://inline-ai.com (Windows)
+- 초대 이벤트(무료 1,000 크레딧): https://portal.inline-ai.com/invitation-promotion?code=K2YERY3H · 초대 코드 `K2YERY3H`
+
 ## 실습 자료 받기
 
 **[inlineAI_실습.zip 내려받기](https://github.com/kwonjungu/inline-ai-setup/raw/main/download/inlineAI_실습.zip)** → 바탕화면에 압축 풀기 → inline AI의 '접근 가능한 폴더'에 `inlineAI_실습` 추가
