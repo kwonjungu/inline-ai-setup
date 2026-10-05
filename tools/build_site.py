@@ -166,10 +166,16 @@ def prompt_store(no):
             lst.clear()
 
     count = 0
+    opened = False
     for b in blocks:
         if b[0] == "prompt":
             lst.append(copy_row(b[1], b[3], b[2].strip("() ")))
             count += 1
+        elif b[0] == "more":
+            flush()
+            nmore = sum(1 for x in blocks[blocks.index(b):] if x[0] == "prompt")
+            out.append(f'<details class="store-more"><summary>더 해보기 (선택) · {nmore}개 — 시간 남으면 펼치기</summary>')
+            opened = True
         elif b[0] == "head":
             flush()
             out.append(f'<p class="guide-title store-head">{E(b[1])}</p>')
@@ -187,18 +193,20 @@ def prompt_store(no):
             else:
                 out.append(f'<p class="store-note">{E(s)}</p>')
     flush()
+    if opened:
+        out.append("</details>")
     return "".join(out), count
 
 
 # ------------------------------------------------------------------ 실습 섹션 내용 (01~08)
 S = {
- "01": dict(title="다운로드<br />폴더 정리", lead="파일을 하나도 안 열어도 돼요. 폴더째 맡기면 AI가 종류별로 세고, 정리할 표부터 보여 줘요.",
+ "01": dict(title="다운로드<br />폴더 정리", lead="파일을 하나도 안 열어도 돼요. 폴더째 맡기면 AI가 정리할 표부터 보여 줘요.",
    keys=("이것만 기억해요", "폴더를 <strong>통째로</strong> 맡기고, 옮기기 전에 <strong>표부터</strong> 받아요.",
          [("폴더째 맡기기", "파일은 열지 않고 <strong>폴더 첨부하기</strong>로 다운로드_흉내만 붙여요."),
           ("표 먼저", "<strong>'원래 이름 → 옮길 폴더'</strong> 표를 보고 좋으면 그때 옮겨요."),
           ("추측은 추측", "어느 게 최신인지는 AI도 <strong>이름만 보고 추측</strong>해요.")]),
    open=("폴더 붙이기", "<strong>새 에이전트</strong> → 입력창 <strong>+</strong> → <strong>폴더 첨부하기</strong> → <strong>다운로드_흉내</strong>를 골라요.", "inline/04_attach_menu_1280.png"),
-   check="종류별 개수 표가 나와요. 합계가 <strong>55개</strong>인지, 캡처본_확인필요.hwpx가 <strong>한글</strong>로 세어졌는지 봐요.",
+   check="<strong>'원래 이름 → 옮길 폴더'</strong> 표가 먼저 나와요. 캡처본_확인필요.hwpx가 <strong>한글</strong> 쪽으로 갔는지 봐요.",
    save="표가 맞으면 <strong>'좋아, 옮겨 줘'</strong>. 탐색기에서 01_공문~99_확인필요 폴더가 생겼는지 확인해요.",
    before=("정리 전 — 실제 다운로드 폴더(911개)", "extra/01_downloads_before_1280.png"),
    traps=[("함정", "<strong>캡처본_확인필요.hwpx</strong>는 이름에 '캡처'가 있지만 한글 파일이에요."),
@@ -224,18 +232,18 @@ S = {
           ("빈칸", "비워 두지 말고 <strong>'미제출'</strong>처럼 채우라고 해요.")]),
    open=("파일 열기", "<strong>새 에이전트</strong>로 시작하고 <strong>표로_만들_자료.hwpx</strong>를 한글로 열어요.", "inline/03a_hangul_edit_window_1280.png"),
    check="한글 창에 표가 들어와요. 맨 위가 <strong>6/3 4반 담임</strong>, 맨 아래가 <strong>6/10 3반 담임</strong>인지 봐요.",
-   save="표 글꼴(④)까지 맞췄으면 <strong>다른 이름으로 저장</strong>해 원본을 남겨요.",
+   save="<strong>다른 이름으로 저장</strong>해 원본을 남겨요.",
    traps=[("업무분장", "마감 빠른 순: 6/3 4반 → 6/4 학년부장 → 6/5 1반 → 6/8 2반 → 6/10 3반"),
           ("일정표", "수요일 '동의서 마감', 금요일 '현장체험학습'은 <strong>교시가 없어요</strong>. 어디에 넣는지 봐요."),
           ("명렬표", "<strong>미제출 5명 / 전체 26명</strong> (3·7·12·17·22번)"),
           ("시수표", "연간 합계 <strong>455시간</strong>. 원본 '계' 칸은 계산식이라 AI가 못 읽을 수 있어요.")]),
- "04": dict(title="작년 문서<br />업데이트", lead="작년 문서는 바꿀 곳 목록부터 받으면 안전해요. 메모대로만 고치게 해요.",
-   keys=("이것만 기억해요", "<strong>목록 먼저</strong>, 고치는 건 그다음이에요.",
-         [("목록 먼저", "'바꿔야 할 곳을 <strong>목록으로만</strong>. 아직 고치지 마.'"),
+ "04": dict(title="작년 문서<br />업데이트", lead="작년 문서와 바뀐 내용 메모만 주면 올해 문서가 돼요. 메모대로만 고치게 해요.",
+   keys=("이것만 기억해요", "<strong>메모대로만</strong> 고치고, <strong>새 이름</strong>으로 저장해요.",
+         [("계획 먼저", "AI가 바꿀 곳을 <strong>먼저 보여 줘요</strong>(지시사항 1번). 읽고 이어서."),
           ("메모대로만", "메모에 없는 숫자는 <strong>[확인 필요]</strong>로 남겨요."),
           ("비교표 보고", "'항목 | 작년 | 올해' 표로 <strong>교감 선생님 보고</strong>까지.")]),
    open=("파일 열고 메모 붙이기", "<strong>2025년 … 신청서(작년).hwpx</strong>를 한글로 열고, <strong>2026_디지털튜터_변경사항_메모</strong>를 첨부해요.", "inline/04_attach_menu_1280.png"),
-   check="바꿔야 할 곳 목록이 먼저 나와요. 본문의 <strong>715명</strong>, 표 아래 실적 연도까지 들어 있는지 봐요.",
+   check="바꿀 곳 계획이 먼저 나와요. 학생 수 <strong>715 → 711</strong>, 교원 수 <strong>[확인 필요]</strong>인지 봐요.",
    save="<strong>2026년 … 신청서.hwpx</strong> 새 파일이 생겼는지, '(작년)' 원본은 그대로인지 확인해요.",
    traps=[("학생 수", "<strong>715 → 711명</strong>. 바뀌는 건 1·3·4학년뿐, 본문의 '715명'도 같이 바뀌어야 해요."),
           ("일괄 바꾸기 금지", "<strong>2025 실적</strong>은 2025 그대로예요. '2025 → 2026' 일괄 바꾸기는 오답."),
@@ -253,14 +261,14 @@ S = {
           ("② 정답은 '못 맞춤'", "조건을 지키면 최소 <strong>14,600원 부족</strong>. 억지로 맞추면 오답이에요."),
           ("④ 0원", "포스트잇 <strong>128개</strong> · 클립 <strong>60개</strong> → 잔액 0원"),
           ("⑥⑦ 견적", "교구 <strong>2,586,270원</strong>(금 이백오십팔만육천이백칠십원정). 버스는 행선지 3곳, <strong>6대</strong>, 3,000,000원.")]),
- "06": dict(title="계획서로<br />기안문 쓰기", lead="계획서 하나와 예시 하나면 기안문이 나와요. 날짜 검사부터 시켜요.",
-   keys=("이것만 기억해요", "<strong>날짜 먼저</strong>, 형식은 <strong>예시 그대로</strong>.",
-         [("날짜 검사", "쓰기 전에 <strong>날짜·요일·연도</strong>부터 확인해요(②번 먼저)."),
+ "06": dict(title="계획서로<br />기안문 쓰기", lead="계획서 하나와 예시 하나면 기안문이 나와요.",
+   keys=("이것만 기억해요", "형식은 <strong>예시 그대로</strong>, 날짜는 <strong>내 눈으로</strong>.",
+         [("날짜 함정", "계획서에 <strong>2024. 4. 18.</strong>이 숨어 있어요. AI가 짚는지 봐요."),
           ("예시 형식", "제목 / 1. 관련 / 2. 가~마 / 붙임 / <strong>끝.</strong>"),
           ("없는 건 비우기", "관련 공문·세부 예산은 지어내지 말고 <strong>[확인 필요]</strong>.")]),
    open=("파일 열고 예시 붙이기", "<strong>2025학년도 오현 AI 과학의 날 운영계획</strong>을 열고 <strong>기안문_본문_예시.hwpx</strong>를 첨부해요.", "inline/04_attach_menu_1280.png"),
-   check="②번으로 이상한 날짜를 먼저 짚어 받아요. <strong>2024. 4. 18.</strong>을 찾았는지 봐요.",
-   save="①번으로 <strong>기안문_오현AI과학의날.hwpx</strong> 새 파일이 생겼는지 확인해요.",
+   check="기안문 형식(제목 / 1. 관련 / 2. 가~마 / 붙임 / 끝.)을 따랐는지, 예산이 <strong>9,000,000원</strong>인지 봐요.",
+   save="<strong>기안문_오현AI과학의날.hwpx</strong> 새 파일이 생겼는지 확인해요.",
    traps=[("연도 오기", "일시 <strong>2024. 4. 18.</strong> → <strong>2025. 4. 18.(금)</strong>. 2024년 4월 18일은 목요일이에요."),
           ("오타", "'9;00'(쌍반점), '간의 의자' → 지적하면 가산점"),
           ("빈 예산 표", "세부 예산은 비어 있어요. 총액 <strong>9,000,000원</strong>만 쓰고 세부는 지어내면 오답."),
@@ -269,10 +277,10 @@ S = {
    keys=("이것만 기억해요", "근거는 <strong>첨부한 자료만</strong>, 숫자는 <strong>엑셀로 계산</strong>.",
          [("근거는 첨부만", "계획서·메모·엑셀에 없는 내용은 <strong>[확인 필요]</strong>."),
           ("숫자는 엑셀로", "참여율·만족도는 <strong>엑셀 숫자로 계산</strong>해서 넣어요."),
-          ("검산 시키기", "③번: '항목 | 보고서 | 원래 자료 | 맞음/틀림' 표.")]),
+          ("마지막은 내 눈", "숫자는 엑셀과 <strong>한 번 더 대조</strong>해요(더 해보기 ③).")]),
    open=("양식 열고 자료 셋 붙이기", "<strong>결과보고서_양식.hwpx</strong>를 열고 계획서·메모·엑셀 <strong>3개를 한 번에</strong> 첨부해요.", "inline/modes/edit_hwp_03_panel_1280.png"),
    check="양식 칸이 하나씩 채워져요. 평균 참여율 <strong>94.0%</strong>, 최저 <strong>5회 70%</strong>가 맞는지 봐요.",
-   save="새 이름 보고서 파일이 생겼는지 확인하고, ③번으로 숫자를 한 번 더 검산해요.",
+   save="새 이름 보고서 파일이 생겼는지 확인해요.",
    traps=[("참여율", "188/200 → 평균 <strong>94.0%</strong>, 최저 <strong>5회(6/27) 70%</strong>"),
           ("만족도", "긍정 비율 <strong>90 · 80 · 80 · 90%</strong>"),
           ("예산", "집행 1,270,000원 / 계획 1,300,000원 → 집행률 <strong>97.7%</strong>"),
@@ -311,7 +319,7 @@ def practice_section(no, idx):
     if d.get("before"):
         cap, shot = d["before"]
         parts.append(mix("이렇죠? 선생님 다운로드 폴더도", f'<p class="mix-lead">강사 컴퓨터의 진짜 다운로드 폴더예요. 파일 이름은 가렸어요.</p>{img(SHOT + shot, cap, "guide-shot md")}', "정리 전"))
-    st = [d["open"], ("프롬프트 붙여 넣기", "아래 <strong>프롬프트 저장소</strong>에서 ①번 <strong>[복사]</strong> → 입력창에 <strong>Ctrl+V</strong> → 보내기.",
+    st = [d["open"], ("프롬프트 붙여 넣기", "아래 <strong>프롬프트 저장소</strong>에서 <strong>★ 필수</strong> 하나만 <strong>[복사]</strong> → 입력창에 <strong>Ctrl+V</strong> → 보내기.",
                       "files:shot_03_input_example_1280.png" if no == "01" else None),
           ("결과 확인", d["check"], "inline/15_plan_then_continue_1280.png" if no == "02" else None),
           ("새 이름으로 저장", d["save"], None)]

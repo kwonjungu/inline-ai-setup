@@ -25,7 +25,7 @@ def parse(txt):
             i += 1
             while i < len(lines):
                 n = lines[i].strip()
-                if (n and n[0] in CIRC) or n.startswith("[추가") or n.startswith("사진 출처"):
+                if (n and n[0] in CIRC) or n.startswith("[추가") or n.startswith("[더 해보기") or n.startswith("사진 출처"):
                     break
                 body.append(lines[i].rstrip())
                 i += 1
@@ -38,7 +38,9 @@ def parse(txt):
             for n in notes:
                 blocks.append(("note", n.strip()))
             continue
-        if s.startswith("[추가"):
+        if s.startswith("[더 해보기"):
+            blocks.append(("more", s.strip("[]")))
+        elif s.startswith("[추가"):
             blocks.append(("head", s.strip("[]")))
         elif s:
             blocks.append(("note", s))
@@ -48,7 +50,8 @@ def parse(txt):
 
 def card(folder_no, num, tail, text):
     pid = f"p{folder_no}-{CIRC.index(num)+1}"
-    return (f'<div class="pc" id="{pid}"><div class="ph"><span class="n">{num}</span>'
+    core = "필수" in tail
+    return (f'<div class="pc{" core" if core else ""}" id="{pid}"><div class="ph"><span class="n">{num}</span>'
             f'<span class="t">{html.escape(tail)}</span>'
             f'<button class="cp" data-for="{pid}-x" type="button">📋 복사</button></div>'
             f'<pre id="{pid}-x">{html.escape(text)}</pre></div>')
@@ -68,13 +71,19 @@ for p in sorted(glob.glob(os.path.join(ROOT, "prompts", "0[1-8]_*.txt"))):
     title, blocks = parse(read(p))
     name = re.sub(r"^\[\d+\]\s*", "", title)
     out = [f'<section id="s{no}"><h2><span class="no">{no}</span>{html.escape(name)}</h2>']
+    nmore = sum(1 for b in blocks[[x[0] for x in blocks].index("more"):] if b[0] == "prompt") if any(b[0] == "more" for b in blocks) else 0
+    opened = False
     for b in blocks:
-        if b[0] == "prompt":
+        if b[0] == "more":
+            out.append(f'<details class="more"><summary>더 해보기 (선택) · {nmore}개 — 시간 남으면</summary>')
+            opened = True
+        elif b[0] == "prompt":
             out.append(card(no, b[1], b[2], b[3]))
         elif b[0] == "head":
             out.append(f'<h3>{html.escape(b[1])}</h3>')
         else:
             out.append(f'<p class="lead">{html.escape(b[1])}</p>')
+    if opened: out.append("</details>")
     out.append("</section>")
     sections.append("".join(out))
     short_names={"01":"다운로드 정리","02":"가정통신문","03":"한글 표","04":"작년 문서","05":"행정 처리","06":"기안문","07":"보고서","08":"PPT"}
@@ -105,11 +114,14 @@ h3{{font-size:17px;margin:26px 0 6px;border-left:4px solid var(--ink);padding-le
 .cp{{font:700 15px Pretendard,sans-serif;border:2px solid var(--ink);background:var(--bg);color:var(--ink);border-radius:999px;padding:8px 16px;cursor:pointer;white-space:nowrap}}
 .cp:hover{{background:var(--ink);color:var(--bg)}} .cp.ok{{background:var(--ac);border-color:var(--ac);color:#fff}}
 pre{{margin:0;padding:10px 16px 16px;white-space:pre-wrap;word-break:keep-all;font:16px/1.7 Pretendard,sans-serif}}
+details.more{{margin:18px 0 0;border-top:1px dashed var(--hair);padding-top:8px}}
+details.more>summary{{cursor:pointer;font-weight:700;color:var(--sub);padding:8px 0;font-size:15px}}
+.pc.core{{outline:3px solid var(--ac)}}
 .toast{{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 18px;border-radius:999px;font-weight:600;opacity:0;transition:opacity .2s;pointer-events:none}}
 .toast.on{{opacity:1}}
 </style></head><body>
 <nav class="top"><b>프롬프트 모음</b>{"".join(nav)}<a href="index.html">처음으로</a></nav>
-<main class="wrap"><p class="lead" style="margin-top:20px">버튼을 누르면 복사돼요. inline AI 입력창에 <b>Ctrl+V</b> → 보내기. 파일 이름은 실습 폴더 그대로예요.</p>
+<main class="wrap"><p class="lead" style="margin-top:20px">실습마다 <b>★ 필수 하나</b>만 하면 돼요. 버튼을 누르면 복사 → inline AI 입력창에 <b>Ctrl+V</b> → 보내기. '더 해보기'는 시간 남을 때.</p>
 {"".join(sections)}</main>
 <div class="toast" id="toast"></div>
 <script>

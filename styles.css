@@ -1349,3 +1349,8 @@ body.solo .lecture.solo-keep { border-top: 0; padding-top: var(--sp-xl); }
   .file-card .file-icon.ext { width: 42px; }
   .utility-bar .caption-sm:first-child { display: none; }
 }
+
+/* 실습 간소화: ★ 필수 하나 + 더 해보기(접기) */
+.store-more { margin-top: 18px; border-top: 1px dashed var(--line, #ddd); padding-top: 6px; }
+.store-more > summary { cursor: pointer; font-weight: 700; color: var(--mute); padding: 10px 0; font-size: 15px; }
+.store-more[open] > summary { color: var(--ink); }

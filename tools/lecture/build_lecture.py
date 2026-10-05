@@ -426,15 +426,15 @@ def harness_svg():
     return "".join(o) + "</svg>"
 P(["S033", "S034", "S035"], lambda: (f'''<div class="pad tight">{head(ms("AI에게") + " " + ms("업무 매뉴얼을 쥐여 줍니다."), ACC, ms("폴더 하나에") + " " + ms("규칙 · 학교 정보 · 날짜표"))}
   <div class="figc">{harness_svg()}</div>
-  <p class="note-line">{ms("왜 오류가 줄까요")} → <b style="color:{PINK}">{ms("날짜표 · 학교 정보 · 체크리스트")}</b></p></div>''', False), "업무 지침 7개가 막는 실수")
+  <p class="note-line">{ms("폴더 맨 앞")} <b>00_README(하네스).txt</b> · {ms("왜 오류가 줄까요")} → <b style="color:{PINK}">{ms("날짜표 · 학교 정보 · 체크리스트")}</b></p></div>''', False), "업무 지침 7개가 막는 실수")
 
 LABS = [
- ("01", "다운로드 정리", 8, [("폴더", "다운로드_흉내")], "① 개수 ② 표 먼저", "캡처본은 한글"),
+ ("01", "다운로드 정리", 8, [("폴더", "다운로드_흉내")], "② 규칙대로 정리", "캡처본은 한글"),
  ("02", "가정통신문", 11, [("hwpx", "통신문 양식"), ("+", "메모")], "① 양식 그대로", "옛 라벨 · 옛 날짜"),
  ("03", "한글 표", 7, [("hwpx", "표로_만들_자료")], "① 마감 빠른 순", "6/3은 선거일?"),
- ("04", "작년 문서", 11, [("hwpx", "신청서(작년)"), ("+", "메모")], "① 목록만 ② 저장", "본문 715명"),
+ ("04", "작년 문서", 11, [("hwpx", "신청서(작년)"), ("+", "메모")], "② 메모대로 새 파일", "본문 715명"),
  ("05", "행정 처리", 9, [("xlsx", "체험학습_예산표")], "① 틀린 금액", "14,600원 부족"),
- ("06", "기안문", 9, [("hwpx", "운영계획"), ("+", "예시")], "② 날짜 먼저 → ①", "세부 예산"),
+ ("06", "기안문", 9, [("hwpx", "운영계획"), ("+", "예시")], "① 예시 형식 그대로", "세부 예산"),
  ("07", "보고서", 7, [("hwpx", "보고서 양식"), ("+", "3개")], "① 근거 셋으로만", "외부 강사비"),
  ("08", "발표 자료", 10, [("pptx", "PPT 양식"), ("+", "3개")], "① 8장 이내", "5회 막대 70%"),
 ]
@@ -447,25 +447,23 @@ def f_map():
                     f'<td class="mmin"><span class="mbar" style="width:{mins*7}px;background:{a}"></span>{mins}분</td>'
                     f'<td>{fs}</td><td class="mpr">{E(pr)}</td><td class="mtrap">{E(trap)}</td></tr>')
     return f'''<div class="pad tight">{head("오늘 지도", ACC, '<span class="ready"><b>' + ms("준비 끝! 세 가지 확인") + '</b> <span class="ok">✓</span>' + ms("폴더 하나만") + ' <span class="ok">✓</span>' + ms("모든 편집 허용") + ' <span class="ok">✓</span>' + ms("지시사항") + '</span>')}
-  <table class="map"><thead><tr><th></th><th>실습</th><th>시간</th><th>여는 파일</th><th>필수 프롬프트</th><th>함정</th></tr></thead><tbody>{"".join(rows)}</tbody></table>
+  <table class="map"><thead><tr><th></th><th>실습</th><th>시간</th><th>여는 파일</th><th>★ 필수 하나</th><th>함정</th></tr></thead><tbody>{"".join(rows)}</tbody></table>
   <p class="note-line">쉬는 시간 5분(04 뒤) · 09 클로드 코워크 14분 · 정리 4분</p></div>''', False
 P("S036", f_map, "오늘 지도 · 준비 확인")
 
 # ---------- 01
 for s in ["S037", "S038"]: P(s)
-P(["S039", "S040"], lambda: r_combo([("S039", None), ("S040", None)], f'<div class="panel">{img(A+"04_attach_menu_1280.png", "입력창 + 메뉴의 폴더 첨부하기")}</div>'), "준비 · 프롬프트 ①")
-P(["S041", "S042"], lambda: r_shot_check("S041", "S042"), "개수 표 · 확인")
-for s in ["S043", "S044", "S045"]: P(s)
+P(["S039", "S043"], lambda: r_combo([("S039", None), ("S043", None)], f'<div class="panel">{img(A+"04_attach_menu_1280.png", "입력창 + 메뉴의 폴더 첨부하기")}</div>'), "준비 · ★ 필수 ②")
+for s in ["S044", "S045"]: P(s)
 P(["S046", "S047"], lambda: r_answer("S046", "S047",
    '<p class="ctitle">종류별 개수 · 합계 55</p>' + svg_hbars([("한글", 25, True), ("기타", 12, False), ("엑셀", 11, False), ("사진", 4, False), ("PDF", 3, False)], PINK, w=600, bh=44, gap=14)), "정답")
 
 # ---------- 02
 P("S048"); P("S049")
 P("S050")
-P(["S051", "S052"], lambda: r_combo([("S051", None), ("S052", None)], f'<div class="panel tallp">{img(A+"03a_hangul_edit_window_1280.png", "한/글 편집 창")}</div>'), "준비 ①②")
-P("S053")
+P(["S051", "S052", "S053"], lambda: r_combo([("S051", None), ("S052", None), ("S053", None)], f'<div class="panel tallp">{img(A+"03a_hangul_edit_window_1280.png", "한/글 편집 창")}</div>'), "준비 · ★ 필수 ①")
 P(["S054", "S055"], lambda: r_shot_check("S054", "S055", boxw=360, boxh=500), "계획 먼저 · 확인")
-for s in ["S056", "S057"]: P(s)
+P("S056")
 def cal_june():
     days = [(8, "월"), (9, "화"), (10, "수"), (11, "목"), (12, "금"), (15, "월"), (16, "화"), (17, "수"), (18, "목"), (19, "금")]
     cells = []
@@ -474,8 +472,6 @@ def cal_june():
         tag = "보내는 날" if d == 10 else ("회신" if d == 19 else "")
         cells.append(f'<div class="cd {" ".join(cls)}"><span class="dw">{w}</span><b>{d}</b><em>{tag}</em></div>')
     return f'<div class="cal"><p class="calh">6월</p><div class="cgrid">{"".join(cells)}</div><div class="cband">디지털 시민교육 주간</div></div>'
-P("S058", lambda: (f'''<div class="pad tight">{head("날짜 · 요일 · 회신 마감", ACC)}
-  <div class="calwrap">{cal_june()}<div class="chips v">{pills([ms(x) for x in L("S058")], "chip big")}</div></div></div>''', False), "날짜 정답")
 P(["S059", "S060"], lambda: r_answer("S059", "S060"), "정답")
 P(["S061", "S062"], lambda: (f'''<div class="pad vc"><span class="rule" style="background:{ACC}"></span>
   <h1 class="d-lg">{br(*L("S061"))}</h1><p class="sub">{vs(gray("S061"))}</p>
@@ -483,7 +479,7 @@ P(["S061", "S062"], lambda: (f'''<div class="pad vc"><span class="rule" style="b
 
 # ---------- 03
 for s in ["S063", "S064"]: P(s)
-P(["S065", "S066"], lambda: r_combo([("S065", None), ("S066", None)], f'<div class="panel tallp">{img(A+"03a_hangul_edit_window_1280.png", "한/글 편집 창")}</div>'), "준비 · 프롬프트 ①")
+P(["S065", "S066"], lambda: r_combo([("S065", None), ("S066", None)], f'<div class="panel tallp">{img(A+"03a_hangul_edit_window_1280.png", "한/글 편집 창")}</div>'), "준비 · ★ 필수 ①")
 P(["S067", "S068"], lambda: r_shot_check("S067", "S068"), "표 · 확인")
 def tl03():
     pts = [(3, "4반 담임", True), (4, "학년부장", False), (5, "1반 담임", False), (8, "2반 담임", False), (10, "3반 담임", False)]
@@ -499,11 +495,8 @@ def tl03():
 P(["S069", "S070"], lambda: r_answer("S069", "S070", '<p class="ctitle">마감 빠른 순 5줄</p>' + tl03()), "정답")
 
 # ---------- 04
-P(["S071", "S072"], lambda: r_section("S071", br(*L("S072"))), "04 섹션 표지")
-P(["S073", "S074"], lambda: r_combo([("S073", None), ("S074", None)], f'<div class="panel tallp">{img(A+"03a_hangul_edit_window_1280.png", "한/글 편집 창")}</div>'), "준비 ①②")
-P("S075")
-P(["S076", "S077"], lambda: r_shot_check("S076", "S077"), "목록 · 확인")
-P("S078")
+P("S071", lambda: r_section("S071", br("메모 하나면", "올해 문서가 돼요")), "04 섹션 표지")
+P(["S073", "S074", "S078"], lambda: r_combo([("S073", None), ("S074", None), ("S078", None)], f'<div class="panel tallp">{img(A+"03a_hangul_edit_window_1280.png", "한/글 편집 창")}</div>'), "준비 · ★ 필수 ②")
 def big715():
     return f'''<div class="b715"><div class="bignum"><span class="old">715</span><span class="arr" style="color:{ACC}">→</span><span class="new" style="color:{ACC}">711</span></div>
   <div class="tri"><div><b>103</b><span>1학년</span></div><div><b>124</b><span>3학년</span></div><div><b>122</b><span>4학년</span></div></div></div>'''
@@ -519,40 +512,33 @@ P("S083", lambda: (f'''<div class="pad brk"><div class="brkring" aria-hidden="tr
 for s in ["S084", "S085"]: P(s)
 P("S086", lambda: (f'''<div class="pad tight"><div class="sc"><div class="formula big"><p class="fx">{ms("342,510원 × 2개")}</p><p class="eq" style="color:{ACC}">{ms("= 685,020원")}</p></div>
   {shot_box("S086", 640, 470)}</div></div>''', False), "산출 내역 예")
-P(["S087", "S088"], lambda: r_combo([("S087", None), ("S088", None)], f'<div class="panel">{img(A+"modes/doc_02_excel_and_inline_side_by_side_1280.png", "MS 엑셀 옆에 Excel 편집 창이 붙은 화면")}</div>'), "준비 · 프롬프트 ①")
+P(["S087", "S088"], lambda: r_combo([("S087", None), ("S088", None)], f'<div class="panel">{img(A+"modes/doc_02_excel_and_inline_side_by_side_1280.png", "MS 엑셀 옆에 Excel 편집 창이 붙은 화면")}</div>'), "준비 · ★ 필수 ①")
 P(["S089", "S090"], lambda: r_shot_check("S089", "S090", '<div class="mchart">' + svg_hbars([("물티슈", 72000, True), ("보험", 1600, True)], TEAL, w=330, bh=30, gap=10, unit="원", labw=64) + '</div>', boxw=640), "다른 줄 · 확인")
-for s in ["S091", "S092"]: P(s)
+P("S091")
 P(["S093", "S095"], lambda: r_answer("S093", "S095", '<div class="stats">'
-   f'<div class="stat2"><span>①</span><b>1,355,100원</b><em>고친 합계</em></div><div class="stat2"><span>④</span><b>128 · 60</b><em>포스트잇 · 클립</em></div><div class="stat2"><span>⑥</span><b>2,586,270원</b><em>견적서 합계</em></div></div>'), "정답")
-P("S094")
+   f'<div class="stat2"><span>보험</span><b>1,600원</b><em>적게 적힘</em></div><div class="stat2"><span>물티슈</span><b>72,000원</b><em>적게 적힘</em></div><div class="stat2"><span>①</span><b>1,355,100원</b><em>고친 합계</em></div></div>'), "정답")
 
 # ---------- 06
 P("S096")
-P("S097", lambda: (f'''<div class="pad duo vc2"><div><span class="rule sm" style="background:{ACC}"></span>{steps_html(steps_of(S["S097"]["screen"]), ACC)}</div>
-  <div class="docwrap"><p class="rtitle">기안문_본문_예시</p><div class="docm"><p class="dt">제목</p><p>1. 관련</p><p>2. 본문</p><p class="ind">가. ~ 마.</p><p>붙임</p><p class="end" style="color:{ACC}">끝.</p></div></div></div>''', False), "순서 ①②③")
-P(["S098", "S099"], lambda: r_combo([("S098", None), ("S099", None)], f'<div class="panel">{img(A+"04_attach_menu_1280.png", "파일 첨부 메뉴")}</div>'), "준비 · 프롬프트 ②")
+P(["S098", "S102"], lambda: r_combo([("S098", None), ("S102", None)], f'<div class="docwrap"><p class="rtitle">기안문_본문_예시</p><div class="docm"><p class="dt">제목</p><p>1. 관련</p><p>2. 본문</p><p class="ind">가. ~ 마.</p><p>붙임</p><p class="end" style="color:{ACC}">끝.</p></div></div>'), "준비 · ★ 필수 ①")
 def calcards():
     def cc(y, wd, ok):
         return f'<div class="calc {"ok" if ok else "bad"}"><span class="cm">{"✓" if ok else "✕"}</span><p class="cy">{y}</p><b>4. 18.</b><span class="cwd">{wd}</span></div>'
     return f'<div class="calrow">{cc("2024.", "목", False)}<span class="arr" style="color:{ACC}">→</span>{cc("2025.", "금", True)}</div>'
-P(["S100", "S101"], lambda: r_shot_check("S100", "S101", calcards(), boxw=600), "날짜 · 확인")
-P("S102")
-P(["S103", "S104"], lambda: r_shot_check("S103", "S104"), "새 파일 · 확인")
+P(["S103", "S104"], lambda: r_shot_check("S103", "S104", '<p class="ctitle" style="margin-top:14px">계획서 속 날짜 함정</p>' + calcards(), boxw=600), "새 파일 · 확인")
 P(["S105", "S106"], lambda: r_answer("S105", "S106"), "정답")
 
 # ---------- 07
 for s in ["S107", "S108"]: P(s)
-P(["S109", "S110"], lambda: r_combo([("S109", None), ("S110", None)], f'<div class="panel">{img(A+"07_work_panel_1280.png", "작업 패널의 첨부 파일 목록")}</div>'), "준비 · 프롬프트 ①")
+P(["S109", "S110"], lambda: r_combo([("S109", None), ("S110", None)], f'<div class="panel">{img(A+"07_work_panel_1280.png", "작업 패널의 첨부 파일 목록")}</div>'), "준비 · ★ 필수 ①")
 P(["S111", "S112"], lambda: r_shot_check("S111", "S112", '<div class="rings">' + svg_ring(94.0, "평균 참여율", TEAL, 150) + svg_ring(97.7, "집행률", TEAL, 150) + '</div>', boxw=600), "채워지는 양식 · 확인")
 P("S113")
 P(["S114", "S116"], lambda: r_answer("S114", "S116", '<p class="ctitle">만족도 긍정 비율</p>' + svg_hbars([("문항 1", 90, True), ("문항 2", 80, False), ("문항 3", 80, False), ("문항 4", 90, True)], TEAL, w=600, bh=44, gap=16, unit="%", maxv=100, labw=90)), "정답")
-P("S115")
 
 # ---------- 08
 for s in ["S117", "S118"]: P(s)
-P(["S119", "S120"], lambda: r_combo([("S119", None), ("S120", None)], f'<div class="panel">{img(A+"04_attach_menu_1280.png", "파일 첨부 메뉴")}</div>'), "준비 · 프롬프트 ①")
+P(["S119", "S120"], lambda: r_combo([("S119", None), ("S120", None)], f'<div class="panel">{img(A+"04_attach_menu_1280.png", "파일 첨부 메뉴")}</div>'), "준비 · ★ 필수 ①")
 P(["S121", "S122"], lambda: r_shot_check("S121", "S122"), "기다리는 동안 · 확인")
-P("S123")
 P(["S124", "S125"], lambda: r_answer("S124", "S125", '<p class="ctitle">회차별 참여율(%)</p>' + svg_vbars([100, 95, 100, 90, 70, 100, 95, 100, 90, 100], [f"{i}회" for i in range(1, 11)], 4, TEAL, w=760, h=360)), "정답")
 
 # ---------- 09
@@ -625,7 +611,9 @@ P("S151", lambda: (f'''<div class="pad closing"><div><span class="rule" style="b
 
 # ================================================================== 검증
 used = [s for src, _, _ in PLAN for s in src]
-assert sorted(used) == sorted(S), (set(S) - set(used), [s for s in used if used.count(s) > 1])
+# 10/5 실습 간소화: 실습마다 ★ 필수 하나만. 아래 장은 '더 해보기(선택)'로 돌려 강의안에서 뺌(원고·프롬프트 모음엔 그대로)
+SKIP = ["S040", "S041", "S042", "S057", "S058", "S072", "S075", "S076", "S077", "S092", "S094", "S097", "S099", "S100", "S101", "S115", "S123"]
+assert sorted(used + SKIP) == sorted(S), (set(S) - set(used) - set(SKIP), [s for s in used if used.count(s) > 1])
 assert used == sorted(used) or True
 
 # ================================================================== 렌더
@@ -707,6 +695,7 @@ for i, sl in enumerate(SLIDES, 1):
     src = sl["src"]; secs = sum(S[s]["sec_s"] for s in src)
     lines.append("| %03d | %s | %s | %s | %d | %s |" % (i, sl["sec"], " + ".join(src), "합침" if len(src) > 1 else "", secs, sl["title"]))
 merged = [sl for sl in SLIDES if len(sl["src"]) > 1]
+lines += ["", "- 뺀 장(실습 간소화 · 더 해보기로 돌림): " + ", ".join(SKIP)]
 lines += ["", "- 합친 장: %d장(원고 %d장 → 강의안 %d장)" % (len(merged), sum(len(m["src"]) for m in merged), len(merged)),
           "- 그대로 옮긴 장: %d장" % (len(SLIDES) - len(merged)),
           "- 인포그래픽(해당 장 안에 넣음, 별도 도식 장 없음): 업무 지침 관계도(S033+S034+S035), 오늘 지도 표(S036), inline AI vs 코워크 비교 표(S145), 아침 루틴·동시 작업(S149+S150)",
