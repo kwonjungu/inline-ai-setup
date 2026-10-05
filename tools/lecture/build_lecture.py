@@ -343,7 +343,7 @@ def f_prep_table():
   {steprow(1, ms("설치"), ms("inline-ai.com") + " → '개인용' → " + ms("Windows용 다운로드"), A+"01_install_site_personal_1280.png", "inline AI 개인용 다운로드 화면")}
   {steprow(2, ms("로그인"), ms("계정 만들기 · 로그인"), A+"02_home_1280.png", "inline AI 첫 화면")}
   {steprow(3, ms("초대 코드"), "K2YERY3H · 1,000 크레딧", None, "")}
-  {steprow(4, ms("폴더 초대"), ms("폴더 추가…") + " → " + ms("inlineAI_실습"), A+"07b_folder_add_dialog_1280.png", "작업 폴더 선택 창")}
+  {steprow(4, ms("폴더 초대"), ms("폴더 추가…") + " → " + ms("inlineAI_실습"), A+"07_work_panel_1280.png", "작업 폴더 선택 창")}
   {steprow(5, ms("편집 전 확인"), ms("모든 편집 허용하기 →") + " " + ms("편집 전 확인하기"), A+"05_approval_menu_1280.png", "편집 방식 메뉴")}
   {steprow(6, ms("지시사항"), ms("일반 설정") + " → " + ms("inline AI 지시사항에 붙이기"), A+"11_settings_general_1280.png", "일반 설정 화면")}
   </tbody></table></div>''', False
