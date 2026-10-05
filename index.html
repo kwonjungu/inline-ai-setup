@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>inline AI 업무 실습</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#111111;--sub:#707072;--hair:#e5e5e5;--soft:#f2f2f2;--bg:#ffffff;--accent:#ed1aa0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--ink:#f2f2f2;--sub:#a0a0a3;--hair:#2a2a2c;--soft:#1c1c1e;--bg:#0f0f10}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px}
+header{background:#111;color:#fff;padding:56px 0 44px}
+.pill{display:inline-block;border:1px solid #fff;border-radius:999px;padding:2px 12px;font-size:12px}
+h1{font-family:'Black Han Sans',sans-serif;font-weight:400;font-size:clamp(36px,7vw,64px);line-height:1.15;margin:16px 0 12px;letter-spacing:.02em}
+header p{color:#cacacb;margin:0}
+h2{font-family:'Black Han Sans',sans-serif;font-weight:400;font-size:28px;margin:48px 0 8px}
+h2::before{content:"";display:block;width:32px;height:4px;background:var(--ink);margin-bottom:14px}
+.lead{color:var(--sub);margin:0 0 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{background:var(--soft);border-radius:16px;padding:20px;text-decoration:none;color:inherit;display:block}
+.card b{display:block;font-size:18px;margin-bottom:4px}
+.card span{color:var(--sub);font-size:14px}
+.card:hover{outline:2px solid var(--ink)}
+.tag{display:inline-block;background:var(--ink);color:var(--bg);border-radius:999px;font-size:12px;padding:1px 10px;margin-bottom:10px}
+.tag.p{background:var(--accent);color:#fff}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--hair);vertical-align:top}
+th{font-size:13px;color:var(--sub);font-weight:600}
+td:first-child{font-weight:700;white-space:nowrap}
+.code{font-family:ui-monospace,Consolas,monospace;background:var(--soft);padding:2px 8px;border-radius:6px}
+footer{color:var(--sub);font-size:13px;padding:48px 0 40px}
+.table-wrap{overflow-x:auto}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <span class="pill">교원 연수 · inline AI</span>
+  <h1>내 업무 파일,<br>AI에게 맡겨 보기</h1>
+  <p>일단 던지고, 내 컴퓨터에 초대하고, 정해진 양식을 주세요.</p>
+</div></header>
+
+<main class="wrap">
+  <h2>시작하기</h2>
+  <p class="lead">세 가지만 하면 준비 끝이에요.</p>
+  <div class="grid">
+    <a class="card" href="https://inline-ai.com" target="_blank" rel="noopener"><span class="tag">1 · 설치</span><b>inline AI 내려받기</b><span>Windows용 · 구글 계정으로 가입</span></a>
+    <a class="card" href="https://portal.inline-ai.com/invitation-promotion?code=K2YERY3H" target="_blank" rel="noopener"><span class="tag p">2 · 초대 이벤트</span><b>무료 1,000 크레딧</b><span>초대 코드 <span class="code">K2YERY3H</span></span></a>
+    <a class="card" href="download/inlineAI_실습.zip"><span class="tag">3 · 실습 자료</span><b>inlineAI_실습.zip</b><span>바탕화면에 압축 풀고 폴더 초대</span></a>
+  </div>
+
+  <h2>강의안</h2>
+  <p class="lead">강의 화면과 매뉴얼이에요.</p>
+  <div class="grid">
+    <a class="card" href="lecture.html"><span class="tag">강의안</span><b>웹 강의안</b><span>번호 입력 후 열려요</span></a>
+    <a class="card" href="https://github.com/kwonjungu/inline-ai-setup/blob/main/docs/앱매뉴얼_inlineAI.md" target="_blank" rel="noopener"><span class="tag">매뉴얼</span><b>inline AI 화면 따라 하기</b><span>설치·모드·설정 캡처</span></a>
+    <a class="card" href="https://github.com/kwonjungu/inline-ai-setup/blob/main/docs/앱매뉴얼_클로드코워크.md" target="_blank" rel="noopener"><span class="tag">매뉴얼</span><b>클로드 코워크</b><span>앱 설치·스킬·예약</span></a>
+  </div>
+
+  <h2>실습 순서</h2>
+  <p class="lead">각 폴더의 프롬프트.txt를 메모장으로 열어 그대로 복사해 쓰세요.</p>
+  <div class="table-wrap"><table>
+    <tr><th>#</th><th>실습</th><th>여는 파일</th></tr>
+    <tr><td>00</td><td>하네스 · 먼저 읽기</td><td>00_하네스_공문서 (AI의 업무 매뉴얼)</td></tr>
+    <tr><td>01</td><td>다운로드 폴더 정리</td><td>다운로드_흉내 · 사진 이름 짓기 · 통합 사진</td></tr>
+    <tr><td>02</td><td>가정통신문 양식 맞추기</td><td>오현교육통신 양식 · 번역</td></tr>
+    <tr><td>03</td><td>한글 표 만들기</td><td>표로_만들_자료 · 명렬표</td></tr>
+    <tr><td>04</td><td>작년 문서 업데이트</td><td>2025 디지털튜터 신청서 → 2026</td></tr>
+    <tr><td>05</td><td>행정 처리</td><td>예산표 · 0원 맞추기 · 견적서</td></tr>
+    <tr><td>06</td><td>계획서로 기안문</td><td>2025 오현 AI 과학의 날</td></tr>
+    <tr><td>07</td><td>계획서로 보고서</td><td>디지털 동아리 · 수상안전</td></tr>
+    <tr><td>08</td><td>계획서·통계로 PPT</td><td>동아리 결과 · 받은 공문 안내 PPT</td></tr>
+    <tr><td>09</td><td>마무리: 클로드 코워크</td><td>같은 일을 스킬·예약으로</td></tr>
+  </table></div>
+
+  <footer>실습 자료 속 학교·사람 이름은 실습용 가상 정보예요. 분리수거 사진: TrashNet(Stanford, MIT License).</footer>
+</main>
+</body>
+</html>
