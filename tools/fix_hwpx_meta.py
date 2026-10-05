@@ -1,6 +1,7 @@
 import zipfile,os,glob,copy,re,sys
 sys.stdout.reconfigure(encoding='utf-8')
 M="materials"
+NAME=sys.argv[1] if len(sys.argv)>1 else "실습용"  # 숨은 작성자 메타 기본값
 def rdf_for(z):
     secs=sorted(n for n in z.namelist() if re.match(r'Contents/section\d+\.xml',n))
     body=''
@@ -8,8 +9,8 @@ def rdf_for(z):
         t='HeaderFile' if 'header' in p else 'SectionFile'
         body+=f'<rdf:Description rdf:about=""><ns0:hasPart xmlns:ns0="http://www.hancom.co.kr/hwpml/2016/meta/pkg#" rdf:resource="{p}"/></rdf:Description><rdf:Description rdf:about="{p}"><rdf:type rdf:resource="http://www.hancom.co.kr/hwpml/2016/meta/pkg#{t}"/></rdf:Description>'
     return ('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">'+body+'<rdf:Description rdf:about=""><rdf:type rdf:resource="http://www.hancom.co.kr/hwpml/2016/meta/pkg#Document"/></rdf:Description></rdf:RDF>').encode()
-META_HWPX=[(r'(<opf:meta name="(?:creator|lastsaveby)"[^>]*>)[^<]*(</opf:meta>)',r'\1홍길동\2')]
-META_OOXML=[(r'(<dc:creator>)[^<]*(</dc:creator>)',r'\1홍길동\2'),(r'(<cp:lastModifiedBy>)[^<]*(</cp:lastModifiedBy>)',r'\1홍길동\2')]
+META_HWPX=[(r'(<opf:meta name="(?:creator|lastsaveby)"[^>]*>)[^<]*(</opf:meta>)',r'\g<1>'+NAME+r'\g<2>')]
+META_OOXML=[(r'(<dc:creator>)[^<]*(</dc:creator>)',r'\g<1>'+NAME+r'\g<2>'),(r'(<cp:lastModifiedBy>)[^<]*(</cp:lastModifiedBy>)',r'\g<1>'+NAME+r'\g<2>')]
 for f in glob.glob(M+'/**/*.*',recursive=True):
     if not f.endswith(('.hwpx','.xlsx','.pptx')) or os.path.getsize(f)==0: continue
     z=zipfile.ZipFile(f); names=z.namelist(); changed=[]
