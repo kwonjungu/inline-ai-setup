@@ -654,6 +654,7 @@ doc = f'''<!doctype html>
 <script type="application/json" id="i18n">{I18N_JS}</script>
 <div class="lang" id="lang" role="group" aria-label="화면 언어"><button data-lang="ko" aria-pressed="true">한국어</button><button data-lang="en" aria-pressed="false">English</button><button data-lang="vi" aria-pressed="false">Tiếng Việt</button></div>
 <script>{JS}</script>
+<script src="assets/copy.js"></script>
 </body></html>'''
 open(OUT, "w", encoding="utf-8").write(doc)
 
