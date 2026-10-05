@@ -428,3 +428,25 @@ html:not([lang="ko"]) .lead-dk{font-size:27px}
 html:not([lang="ko"]) .formula p,html:not([lang="ko"]) .stat2 b{font-family:var(--fu)!important;font-weight:900}
 html:not([lang="ko"]) .formula.big p{font-size:54px}
 body.present .deckwrap{padding-top:10px;padding-bottom:10px}
+/* 프롬프트 원문 상자 · 설명 줄 */
+.pbxs{display:flex;flex-direction:column;gap:12px;width:100%}
+.mright .pbxs{width:560px}
+.pbx{background:#111;color:#fff;border-radius:20px;padding:20px 24px}
+.pbx.sm{padding:16px 20px;margin-top:14px}
+.pbh{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.pbh b{font-size:15px;font-weight:800;background:var(--ac);border-radius:999px;padding:4px 12px}
+.pbl{font-size:14px;color:#9e9ea0;font-weight:700;margin-left:auto}
+.pbt{line-height:1.6;color:#f2f2f2;font-weight:500;word-break:keep-all}
+.slide.has-ex .pad{padding-bottom:112px}
+.expl{position:absolute;left:60px;right:310px;bottom:40px;font-size:19px;line-height:1.5;color:var(--ash);border-left:4px solid var(--ac);padding:2px 0 2px 14px;max-height:62px;overflow:hidden}
+.combo .gr{padding:14px 0}
+.combo .gc b{font-size:28px}
+.combo .gc{font-size:22px}
+.duo2.rules{grid-template-columns:1.05fr 1fr;gap:22px}.duo2.rules .panel{height:auto;max-height:440px}
+.mission.has-r .d-md{font-size:44px}.mission.has-r .mright .pbxs{width:600px}
+html:not([lang="ko"]) .expl{right:400px;font-size:17px}
+html:not([lang="ko"]) .formula.big p{font-size:42px}
+.slide.has-ex:has(.cpbar) .pad{padding-bottom:150px}
+.slide:has(.cpbar) .expl{bottom:82px}
+.mission.has-r .d-md{font-size:40px}
+.hubs{font-size:20px;font-weight:700;fill:#cacacb}

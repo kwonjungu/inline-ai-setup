@@ -33,17 +33,46 @@ def parse():
 
 S = parse()
 assert len(S) == 151
-S["S066"]["quote"] = ["프롬프트 원문(03-①, 원고에 비어 있어 materials 프롬프트.txt에서 보충):",
-    "> [자료 1] 학년 업무분장을 '담당 | 맡은 일 | 마감일 | 비고' 표로 바꿔 줘. 마감일이 빠른 순서로 정리해 줘."]
-S["S120"]["quote"] = ["프롬프트 원문(08-①, 원고에는 ⑥번 문장이 들어가 있어 materials 프롬프트.txt로 보정):",
-    "> 첨부한 자료로 '2025 디지털 동아리 운영 결과' 발표 자료를 8장 이내로 만들어 줘.",
-    "> - 열려 있는 우리 학교 양식(남색 제목 띠, 맑은 고딕)을 따를 것",
-    "> - 순서: 표지 → 운영 개요 → 활동 내용 → 참여 현황 → 만족도 → 성과 → 개선점 → 마무리",
-    "> - 새 파일 '동아리_결과발표.pptx'로 저장"]
 
 def L(sid):   return [x.strip() for x in S[sid]["screen"].split(" / ")]
 def V(sid):   return S[sid]["visual"]
-def imgs(sid): return [p.replace("\\", "/") for p in re.findall(r"assets\\shot\\[^\s+]+?\.png", V(sid))]
+def imgs(sid): return [p.replace("\\", "/") for p in re.findall(r"assets[\\/][^\s+,)'\]]+?\.png", V(sid))]
+
+def prompts(sid):
+    """노트의 '프롬프트 원문(NN-①, …):' 블록 -> [(라벨, 원문)]"""
+    out, cur = [], None
+    for q in S[sid]["quote"]:
+        m = re.match(r"프롬프트 원문\(([^,)]+)", q)
+        if m: cur = [m.group(1), []]; out.append(cur); continue
+        if q.startswith(">") and cur is not None: cur[1].append(q[1:].strip())
+    return [(a, "\n".join(b)) for a, b in out if b]
+
+def prompt_box(sids, maxh=None, cls=""):
+    if isinstance(sids, str): sids = [sids]
+    ps = [p for s in sids for p in prompts(s)]
+    if not ps: return ""
+    h = []
+    for lab, t in ps:
+        n = len(t) + 20 * t.count("\n")
+        fs = 24 if n <= 70 else 21 if n <= 130 else 18 if n <= 230 else 16 if n <= 330 else 14
+        h.append(f'<div class="pbx {cls}"><p class="pbh"><b>{E(lab)}</b><span class="pbl">웹에서 [복사]</span></p><p class="pbt" style="font-size:{fs}px">{E(t).replace(chr(10), "<br>")}</p></div>')
+    return '<div class="pbxs">' + "".join(h) + "</div>"
+
+SKIP = ("띄울게요", "볼게요", "보여 드릴게요", "[확인 필요", "자료 하나", "손 들어", "돌아다닐게요")
+def expl(sids, n=2, cap=120):
+    if isinstance(sids, str): sids = [sids]
+    sents = []
+    for sid in sids:
+        for x in re.split(r"(?<=[.?!요다])\s+", S[sid]["note"]):
+            x = x.strip()
+            if len(x) < 12 or any(k in x for k in SKIP): continue
+            sents.append(x)
+    out = ""
+    for x in sents:
+        if out and (len(out) + len(x) > cap): break
+        out = (out + " " + x).strip()
+        if out.count(" ") and len(out) >= 60 and out.count(".") + out.count("요") >= n: break
+    return out[:cap + 40]
 def need(sid):
     m = re.search(r"\[캡처 필요: ?([^\]]*)\]", V(sid)); return m.group(1) if m else None
 def gray(sid):
@@ -158,9 +187,9 @@ def r_sentence(sid):
 
 def card_parts(sid):
     ls = L(sid); tg = re.findall(r"'([^']+)'", V(sid))
-    if len(tg) == len(ls): title, items = None, ls
-    else:
-        title = ls[0]; items = [y.strip() for x in ls[1:] for y in x.split(" · ")]
+    items = [y.strip() for x in ls[1:] for y in x.split(" · ")]
+    if tg and len(tg) != len(items) and len(tg) == len(ls): title, items = None, ls
+    else: title = ls[0]
     out = []
     for i, it in enumerate(items):
         t = tg[i] if len(tg) == len(items) else None
@@ -235,7 +264,8 @@ def r_mission(sid, right=None):
     ls = L(sid); lab = label(sid) or "실습 미션"; ds = dots(sid)
     im = imgs(sid)
     if right is None:
-        if im: right = f'<div class="panel mimg">{img(im[0], ls[0] + " 화면")}</div>'
+        if prompts(sid): right = prompt_box(sid)
+        elif im: right = f'<div class="panel mimg">{img(im[0], ls[0] + " 화면")}</div>'
         elif "프롬프트.txt" in S[sid]["screen"]: right = prompt_art(ACC)
         else: right = ""
     dh = ('<ul class="dots">' + "".join(f"<li>{vs(d)}</li>" for d in ds) + "</ul>") if ds else ""
@@ -269,6 +299,8 @@ def r_combo(blocks, right_html="", note=""):
         first = lab or ls[0]; rest = ls[1:] if not lab else ls
         lab_h = ms(first) if not lab else vs(first) if first in V_ALL else E(first)
         rows.append(f'<div class="gr"><span class="gl" style="--ac:{ACC}">{lab_h}</span><div class="gc">{" ".join("<b>" + ms(x) + "</b>" if i == 0 else ms(x) for i, x in enumerate(rest))}</div></div>')
+    pb = prompt_box([b[0] for b in blocks], cls="sm")
+    if pb: rows.append(pb)
     return f'''<div class="pad combo {"has-r" if right_html else ""}"><div class="gtab">{"".join(rows)}{('<p class="cap">' + note + '</p>') if note else ''}</div>
   {('<div class="mright">' + right_html + '</div>') if right_html else ''}</div>''', False
 
@@ -306,6 +338,7 @@ def P(src, fn=None, title=None):
     if isinstance(src, str): src = [src]
     PLAN.append((src, title, fn))
 
+NOEX = {"업무 지침 7개가 막는 실수", "오늘 지도 · 준비 확인", "inline AI vs 코워크", "아침 루틴 · 동시 작업", "준비 단계 표", "다시 보기"}
 V_ALL = "\n".join(d["visual"] for d in S.values())
 
 # ---------- 여는 말
@@ -336,45 +369,48 @@ for s in ["S008", "S009", "S010", "S011", "S012"]: P(s)
 P("S013")
 A = "assets/shot/inline/"
 def steprow(no, name, todo, thumb, alt):
-    return f'<tr><td class="sn"><span class="sno" style="background:{ACC}">{no}</span></td><td class="sname">{name}</td><td class="stodo">{todo}</td><td class="sthumb">{img(thumb, alt) if thumb else ph("")}</td></tr>'
+    return f'<tr><td class="sn"><span class="sno" style="background:{ACC}">{no}</span></td><td class="sname">{name}</td><td class="stodo">{todo}</td><td class="sthumb">{img(thumb, alt) if thumb else qr_svg("https://portal.inline-ai.com/invitation-promotion?code=K2YERY3H", 68)}</td></tr>'
 def f_prep_table():
     return f'''<div class="pad tight">{head(ms("준비 1") + " · " + ms("준비 2"), ACC, ms("AI를 내 컴퓨터에 초대해요"))}
   <table class="steps6"><thead><tr><th></th><th>단계</th><th>할 일</th><th>화면</th></tr></thead><tbody>
   {steprow(1, ms("설치"), ms("inline-ai.com") + " → '개인용' → " + ms("Windows용 다운로드"), A+"01_install_site_personal_1280.png", "inline AI 개인용 다운로드 화면")}
   {steprow(2, ms("로그인"), ms("계정 만들기 · 로그인"), A+"02_home_1280.png", "inline AI 첫 화면")}
   {steprow(3, ms("초대 코드"), "K2YERY3H · 1,000 크레딧", None, "")}
-  {steprow(4, ms("폴더 초대"), ms("폴더 추가…") + " → " + ms("inlineAI_실습"), A+"07_work_panel_1280.png", "작업 폴더 선택 창")}
-  {steprow(5, ms("편집 전 확인"), ms("모든 편집 허용하기 →") + " " + ms("편집 전 확인하기"), A+"05_approval_menu_1280.png", "편집 방식 메뉴")}
+  {steprow(4, ms("폴더 하나만 초대"), ms("폴더 추가…") + " → " + ms("inlineAI_실습"), A+"07_work_panel_1280.png", "작업 폴더 선택 창")}
+  {steprow(5, ms("승인 모드 확인"), ms("모든 편집 허용하기 그대로"), A+"05_approval_menu_1280.png", "편집 방식 메뉴")}
   {steprow(6, ms("지시사항"), ms("일반 설정") + " → " + ms("inline AI 지시사항에 붙이기"), A+"11_settings_general_1280.png", "일반 설정 화면")}
   </tbody></table></div>''', False
 P(["S014", "S015"], f_prep_table, "준비 단계 표")
 P("S016"); P("S017")
 P(["S018", "S019"], lambda: (f'''<div class="pad tight">{head(ms("받은 파일 두 번 클릭") + " " + ms("설치"), ACC)}
-  <div class="sc">{ph(need("S018"), 700, 470)}<div class="chk"><p class="chkh">{ms("설치가 막히면")}</p>
+  <div class="sc">{shot_box("S018", 720, 470)}<div class="chk"><p class="chkh">{ms("설치가 막히면")}</p>
   {"".join(f'<div class="ci"><i style="color:{ACC}">!</i>{ms(x)}</div>' for x in L("S019")[1:])}</div></div></div>''', False), "설치")
 def f_login():
     url = "https://portal.inline-ai.com/invitation-promotion?code=K2YERY3H"
     return f'''<div class="pad tight">{head(ms("계정 만들기 · 로그인") + " → " + ms("초대 코드 넣기"), ACC)}
-  <div class="sc">{ph(need("S020"), 640, 470)}
+  <div class="sc">{shot_box("S020", 680, 470)}
   <div class="invite"><p class="chkh">{vs("초대 이벤트")}</p>{qr_svg(url, 220)}<p class="code">{vs("K2YERY3H")}</p><p class="cap">무료 1,000 크레딧</p></div></div></div>''', False
 P(["S020", "S021"], f_login, "로그인 · 초대 코드")
 for s in ["S022", "S023", "S024", "S025", "S026", "S027"]: P(s)
-P(["S028", "S029"], lambda: (f'''<div class="pad tight">{head(ms("일반 설정") + " " + ms("inline AI 지시사항에 붙이기"), ACC)}
-  <p class="path">{ms("00_하네스_공문서")} <i>›</i> {ms("01_메타프롬프트_짧은판")} <i>›</i> {ms("전체 복사")} <i>›</i> Ctrl+V</p>
-  <div class="figwrap grow"><div class="panel">{img(A+"11_settings_general_1280.png", "일반 설정 화면의 inline AI 지시사항 칸", "max-height:440px;max-width:840px")}</div></div></div>''', False), "지시사항 붙이기")
+def f_rules():
+    lines = [q[1:].strip() for q in S["S029"]["quote"] if q.startswith(">")]
+    box = f'<div class="pbx"><p class="pbh"><b>01_기본지침_짧은판</b><span class="pbl">웹에서 [복사]</span></p><p class="pbt" style="font-size:14px">{"<br>".join(E(x) for x in lines)}</p></div>'
+    return f'''<div class="pad tight">{head(ms("지시사항 7줄") + " " + '<span class="hl2">' + ms("웹에서 [복사]") + '</span>', ACC, ms("일반 설정") + " → " + ms("inline AI 지시사항에 붙이기"))}
+  <div class="duo2 rules">{box}<div class="panel">{img(A+"11_settings_general_1280.png", "일반 설정 화면의 inline AI 지시사항 칸")}</div></div></div>''', False
+P(["S028", "S029"], f_rules, "지시사항 붙이기")
 for s in ["S030", "S031", "S032"]: P(s)
 
 def harness_svg():
-    files = [("01", "짧은판", "바로 고치기", False), ("02", "전체판", "순서 건너뛰기", False),
-             ("03", "표기 규칙", "날짜·금액 표기", False), ("04", "학교 정보", "숫자 지어내기", True),
-             ("05", "날짜요일표", "요일 실수", True), ("06", "문서별 틀", "양식 깨짐", False), ("07", "체크리스트", "빠뜨린 항목", True)]
+    files = [("01", "기본지침 짧은판", "바로 고치기", False), ("02", "기본지침 자세히", "순서 건너뛰기", False),
+             ("03", "표기지침", "날짜·금액 표기", False), ("04", "학교정보지침", "숫자 지어내기", True),
+             ("05", "날짜요일지침", "요일 실수", True), ("06", "문서틀지침", "양식 깨짐", False), ("07", "검수지침", "빠뜨린 항목", True)]
     W, H = 1130, 452
-    o = [f'<svg class="hsvg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" role="img" aria-label="00_하네스_공문서 파일 7개와 각 파일이 막는 오류">']
+    o = [f'<svg class="hsvg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" role="img" aria-label="업무 지침 7개가 막는 실수">']
     o.append('<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#9E9EA0"/></marker></defs>')
-    o.append('<text x="0" y="20" class="hh">폴더</text><text x="380" y="20" class="hh">파일</text><text x="830" y="20" class="hh">막는 오류</text>')
+    o.append('<text x="0" y="20" class="hh">폴더</text><text x="380" y="20" class="hh">지침 파일</text><text x="830" y="20" class="hh">막는 실수</text>')
     hx, hy, hw, hh = 0, 150, 270, 150
     o.append(f'<rect x="{hx}" y="{hy}" width="{hw}" height="{hh}" rx="22" fill="#111"/><path d="M30 {hy+34}h40l10 10h70v6H30z" fill="{PINK}"/>')
-    o.append(f'<text x="30" y="{hy+92}" class="hub">00_하네스</text><text x="30" y="{hy+128}" class="hub">_공문서</text>')
+    o.append(f'<text x="30" y="{hy+92}" class="hub">00_업무지침</text><text x="30" y="{hy+128}" class="hubs">업무 지침 7개</text>')
     y0, step, nh = 38, 58, 46
     for i, (no, name, err, hi) in enumerate(files):
         y = y0 + i * step; cy = y + nh / 2; c = PINK if hi else "#707072"
@@ -390,7 +426,7 @@ def harness_svg():
     return "".join(o) + "</svg>"
 P(["S033", "S034", "S035"], lambda: (f'''<div class="pad tight">{head(ms("AI에게") + " " + ms("업무 매뉴얼을 쥐여 줍니다."), ACC, ms("폴더 하나에") + " " + ms("규칙 · 학교 정보 · 날짜표"))}
   <div class="figc">{harness_svg()}</div>
-  <p class="note-line">{ms("왜 오류가 줄까요")} → <b style="color:{PINK}">{ms("날짜표 · 학교 정보 · 체크리스트")}</b></p></div>''', False), "하네스 관계도")
+  <p class="note-line">{ms("왜 오류가 줄까요")} → <b style="color:{PINK}">{ms("날짜표 · 학교 정보 · 체크리스트")}</b></p></div>''', False), "업무 지침 7개가 막는 실수")
 
 LABS = [
  ("01", "다운로드 정리", 8, [("폴더", "다운로드_흉내")], "① 개수 ② 표 먼저", "캡처본은 한글"),
@@ -410,7 +446,7 @@ def f_map():
         rows.append(f'<tr><td><span class="mno" style="background:{a}">{n}</span></td><td class="mname">{E(name)}</td>'
                     f'<td class="mmin"><span class="mbar" style="width:{mins*7}px;background:{a}"></span>{mins}분</td>'
                     f'<td>{fs}</td><td class="mpr">{E(pr)}</td><td class="mtrap">{E(trap)}</td></tr>')
-    return f'''<div class="pad tight">{head("오늘 지도", ACC, '<span class="ready"><b>' + ms("준비 끝! 세 가지 확인") + '</b> <span class="ok">✓</span>' + ms("폴더 초대") + ' <span class="ok">✓</span>' + ms("편집 전 확인") + ' <span class="ok">✓</span>' + ms("지시사항") + '</span>')}
+    return f'''<div class="pad tight">{head("오늘 지도", ACC, '<span class="ready"><b>' + ms("준비 끝! 세 가지 확인") + '</b> <span class="ok">✓</span>' + ms("폴더 하나만") + ' <span class="ok">✓</span>' + ms("모든 편집 허용") + ' <span class="ok">✓</span>' + ms("지시사항") + '</span>')}
   <table class="map"><thead><tr><th></th><th>실습</th><th>시간</th><th>여는 파일</th><th>필수 프롬프트</th><th>함정</th></tr></thead><tbody>{"".join(rows)}</tbody></table>
   <p class="note-line">쉬는 시간 5분(04 뒤) · 09 클로드 코워크 14분 · 정리 4분</p></div>''', False
 P("S036", f_map, "오늘 지도 · 준비 확인")
@@ -482,7 +518,7 @@ P("S083", lambda: (f'''<div class="pad brk"><div class="brkring" aria-hidden="tr
 # ---------- 05
 for s in ["S084", "S085"]: P(s)
 P("S086", lambda: (f'''<div class="pad tight"><div class="sc"><div class="formula big"><p class="fx">{ms("342,510원 × 2개")}</p><p class="eq" style="color:{ACC}">{ms("= 685,020원")}</p></div>
-  {ph(need("S086"), 600, 470)}</div></div>''', False), "산출 내역 예")
+  {shot_box("S086", 640, 470)}</div></div>''', False), "산출 내역 예")
 P(["S087", "S088"], lambda: r_combo([("S087", None), ("S088", None)], f'<div class="panel">{img(A+"modes/doc_02_excel_and_inline_side_by_side_1280.png", "MS 엑셀 옆에 Excel 편집 창이 붙은 화면")}</div>'), "준비 · 프롬프트 ①")
 P(["S089", "S090"], lambda: r_shot_check("S089", "S090", '<div class="mchart">' + svg_hbars([("물티슈", 72000, True), ("보험", 1600, True)], TEAL, w=330, bh=30, gap=10, unit="원", labw=64) + '</div>', boxw=640), "다른 줄 · 확인")
 for s in ["S091", "S092"]: P(s)
@@ -549,7 +585,7 @@ P("S143", lambda: (f'''<div class="pad tight">{head(ms("스킬 업로드"), ACC)
 P("S144")
 def badge(t, k): return f'<span class="bd bd-{k}">{E(t)}</span>'
 CMP = [("폴더 초대", "접근 가능한 폴더", "폴더 추가", badge("같음", "same")),
-       ("고치기 전 확인", "편집 전 확인하기", "수동 승인", badge("같음", "same")),
+       ("승인 방식", "모든 편집 허용하기", "자동 승인", badge("같음", "same")),
        ("규칙 붙이기", "지시사항", "Claude 지침", badge("같음", "same")),
        ("스킬 · 예약 · 커넥터", "—", "있음", badge("코워크만", "cw")),
        ("한글 직접 편집", "한/글 편집하기", "hwp 출력 없음", badge("inline AI", "in")),
@@ -585,7 +621,7 @@ def routine_svg():
 P(["S149", "S150"], lambda: (f'''<div class="pad tight">{head(ms("내일부터 아침 루틴"), ACC, ms("여러 AI에게 동시에") + " · " + ms("+ 수업 퀴즈까지"))}
   <div class="figc">{routine_svg()}</div><p class="note-line center">{vs("시켜 두고 → 확인하고 → 피드백")}</p></div>''', False), "아침 루틴 · 동시 작업")
 P("S151", lambda: (f'''<div class="pad closing"><div><span class="rule" style="background:{ACC}"></span><h2 class="d-lg">{ms("다시 보기")}</h2>
-  <p class="url">{ms("[확인 필요: 강의 사이트 주소]")}</p></div><figure class="qrfig">{qr_svg("https://inline-ai-setup.vercel.app/", 280)}<figcaption>inline-ai-setup.vercel.app<br><small>임시 주소 · 확정 후 바꾸기</small></figcaption></figure></div>''', False), "다시 보기")
+  <p class="url">{ms("[확인 필요: 강의 사이트 주소]")}</p></div><figure class="qrfig">{qr_svg("https://inline-ai-setup.vercel.app/", 280)}<figcaption>inline-ai-setup.vercel.app</figcaption></figure></div>''', False), "다시 보기")
 
 # ================================================================== 검증
 used = [s for src, _, _ in PLAN for s in src]
@@ -613,7 +649,11 @@ for src, title, fn in PLAN:
         body, dark = fn()
     if not title:
         ls = L(src[0]); title = " ".join(ls[:2]) if len(" ".join(ls[:2])) < 30 else ls[0]
-    SLIDES.append({"src": src, "sec": sec, "title": title, "body": body, "dark": dark, "acc": ACC})
+    ex = ""
+    if not dark and S[src[0]]["type"] not in ("한 문장", "표지") and title not in NOEX:
+        ex = expl(src)
+    if ex: body += f'<p class="expl">{E(ex)}</p>'
+    SLIDES.append({"src": src, "sec": sec, "title": title, "body": body, "dark": dark, "acc": ACC, "ex": bool(ex)})
 
 CSS = open(os.path.join(HERE, "lecture.css"), encoding="utf-8").read()
 JS = open(os.path.join(HERE, "lecture.js"), encoding="utf-8").read()
@@ -621,7 +661,7 @@ frames = []
 for i, sl in enumerate(SLIDES, 1):
     secs = sum(S[s]["sec_s"] for s in sl["src"])
     frames.append(f'<div class="frame" data-i="{i}" data-sec="{E(sl["sec"])}" data-title="{E(sl["title"])}" data-src="{",".join(sl["src"])}" data-secs="{secs}">'
-                  f'<section class="slide{" dark" if sl["dark"] else ""}" id="p{i}" style="--ac:{sl["acc"]}" aria-label="{i}. {E(sl["title"])}">{sl["body"]}'
+                  f'<section class="slide{" dark" if sl["dark"] else ""}{" has-ex" if sl["ex"] else ""}" id="p{i}" style="--ac:{sl["acc"]}" aria-label="{i}. {E(sl["title"])}">{sl["body"]}'
                   f'<div class="pnum"><span>{E(sl["sec"])}</span><b>{i:02d}</b></div></section>'
                   f'<template class="notes">{notes_html(sl["src"])}</template></div>')
 
@@ -669,7 +709,7 @@ for i, sl in enumerate(SLIDES, 1):
 merged = [sl for sl in SLIDES if len(sl["src"]) > 1]
 lines += ["", "- 합친 장: %d장(원고 %d장 → 강의안 %d장)" % (len(merged), sum(len(m["src"]) for m in merged), len(merged)),
           "- 그대로 옮긴 장: %d장" % (len(SLIDES) - len(merged)),
-          "- 인포그래픽(해당 장 안에 넣음, 별도 도식 장 없음): 하네스 관계도(S033+S034+S035), 오늘 지도 표(S036), inline AI vs 코워크 비교 표(S145), 아침 루틴·동시 작업(S149+S150)",
+          "- 인포그래픽(해당 장 안에 넣음, 별도 도식 장 없음): 업무 지침 관계도(S033+S034+S035), 오늘 지도 표(S036), inline AI vs 코워크 비교 표(S145), 아침 루틴·동시 작업(S149+S150)",
           "- 숫자 차트: 01 종류별 개수(S046), 02 6월 달력(S058), 03 마감 순서(S069), 04 715→711(S079), 05 차이 금액(S089)·정답 수치(S093), 06 2024/2025 요일(S100), 07 참여율·집행률 고리(S111)·만족도(S114), 08 회차별 참여율(S124)",
           "- 노트 보정: S066(프롬프트 원문 비어 있음)·S120(⑥번 문장이 들어가 있음)은 materials 프롬프트.txt 원문으로 노트만 보정. 화면 글자는 손대지 않음."]
 open(os.path.join(REPO, "deck", "강의안_대응표.md"), "w", encoding="utf-8").write("\n".join(lines) + "\n")

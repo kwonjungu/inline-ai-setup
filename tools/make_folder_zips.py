@@ -27,7 +27,7 @@ for name in sorted(os.listdir(M)):
     print(f"{name}.zip  파일 {n}개  {os.path.getsize(dst)/1024:,.0f} KB  UTF-8 {'OK' if utf8 else '확인 필요'}")
 
 # 클로드 스킬 업로드용: zip 안에 school-official-docs/SKILL.md + references/
-skill = os.path.join(M, "00_하네스_공문서", "클로드_스킬용")
+skill = os.path.join(M, "00_업무지침", "클로드_스킬용")
 dst = os.path.join(ROOT, "download", "클로드_스킬_school-official-docs.zip")
 with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
     for dp, dns, fns in os.walk(skill):

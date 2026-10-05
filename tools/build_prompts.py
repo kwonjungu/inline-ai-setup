@@ -1,4 +1,4 @@
-# prompts/0X_*.txt 와 00_하네스 짧은판으로 prompts.html(복사 버튼 페이지)을 만든다
+# prompts/0X_*.txt 와 00_업무 지침 짧은판으로 prompts.html(복사 버튼 페이지)을 만든다
 import glob, html, os, re, sys
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -55,10 +55,10 @@ def card(folder_no, num, tail, text):
 
 
 sections, nav = [], []
-short = read(os.path.join(M, "00_하네스_공문서", "01_메타프롬프트_짧은판.txt")).strip()
+short = read(os.path.join(M, "00_업무지침", "01_기본지침_짧은판.txt")).strip()
 sections.append('<section id="s00"><h2><span class="no">00</span>준비: AI 지시사항</h2>'
                 '<p class="lead">inline AI → 계정 → 설정 → 일반 설정 → <b>inline AI 지시사항</b>에 한 번 붙여 넣기</p>'
-                f'<div class="pc" id="p00-1"><div class="ph"><span class="n">★</span><span class="t">메타 프롬프트 짧은판 (00_하네스_공문서)</span>'
+                f'<div class="pc" id="p00-1"><div class="ph"><span class="n">★</span><span class="t">기본 지침 짧은판 (00_업무지침)</span>'
                 f'<button class="cp" data-for="p00-1-x" type="button">📋 복사</button></div><pre id="p00-1-x">{html.escape(short)}</pre></div></section>')
 nav.append('<a href="#s00">00 준비</a>')
 

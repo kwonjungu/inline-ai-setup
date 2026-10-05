@@ -177,7 +177,7 @@ def prompt_store(no):
             flush()
             s = b[1]
             if s.startswith("※ 시작 전"):
-                continue  # 하네스는 inlineAI_실습 안에 있어 따로 추가할 필요 없음(폴더는 하나만 초대)
+                continue  # 업무 지침는 inlineAI_실습 안에 있어 따로 추가할 필요 없음(폴더는 하나만 초대)
             for a, z in DISPLAY_FIX.items():
                 s = s.replace(a, z)
             if s.startswith("준비") or s.startswith("[") and "열고" in s:
@@ -353,14 +353,14 @@ def practice_section(no, idx):
 
 # ------------------------------------------------------------------ 00 준비
 def prep_section():
-    short = read(os.path.join(M, "00_하네스_공문서", "01_메타프롬프트_짧은판.txt")).strip()
-    full = read(os.path.join(M, "00_하네스_공문서", "02_메타프롬프트_전체판.txt")).strip()
+    short = read(os.path.join(M, "00_업무지침", "01_기본지침_짧은판.txt")).strip()
+    full = read(os.path.join(M, "00_업무지침", "02_기본지침_자세히.txt")).strip()
     login = (glob.glob(os.path.join(ROOT, "assets", "shot", "extra", "*login*_1280.png")) + glob.glob(os.path.join(ROOT, "assets", "shot", "extra", "*login*.png")))
     invite = (glob.glob(os.path.join(ROOT, "assets", "shot", "extra", "*invit*_1280.png")) + glob.glob(os.path.join(ROOT, "assets", "shot", "extra", "*invit*.png")))
     rel = lambda p: os.path.relpath(p, os.path.join(ROOT, "assets", "shot")).replace(os.sep, "/") if p else None
     login_shot = rel(login[0]) if login else "inline/02_home_1280.png"
     invite_shot = rel(invite[0]) if invite else None
-    hz = "download/폴더별/00_하네스_공문서.zip"
+    hz = "download/폴더별/00_업무지침.zip"
     parts = []
     parts.append(key_block("로컬이라 좋은 점", "inline AI는 웹 채팅이 아니라 <strong>내 컴퓨터에 깔려서</strong> 파일을 직접 열어요.",
                            [("용량", "<strong>큰 파일도 OK</strong>. 채팅창 올리기 제한에 덜 걸려요."),
@@ -383,7 +383,7 @@ def prep_section():
     parts.append(mix("프롬프트는 이 사이트에서 복사해요",
                      '<p class="mix-lead">실습마다 <strong>[펼치기]</strong> → 프롬프트 저장소의 <strong>[복사]</strong> → inline AI 입력창에 <strong>Ctrl+V</strong>. 한 페이지로 모아 둔 <a href="prompts.html"><strong>프롬프트 모음</strong></a>도 있어요.</p>'
                      + img(SHOT + "extra/00_prompts_page_1280.png", "프롬프트 모음 화면 — 복사 버튼", "guide-shot md"), "📋 복사 버튼"))
-    parts.append(mix("지시사항 — 메타 프롬프트 짧은판",
+    parts.append(mix("지시사항 — 기본 지침 짧은판",
                      '<p class="mix-lead">복사해서 <strong>설정 → 일반 설정 → inline AI 지시사항</strong>에 한 번만 붙여 넣어요. 연수가 끝나면 지워도 돼요.</p>'
                      f'<div class="prompt-list">{copy_row("★ 짧은판", short)}</div>', "📋 복사해서 쓰기", "store"))
     parts.append(key_block("안전장치 세 가지", "승인 모드는 '모든 편집 허용하기' 그대로. 대신 이 세 가지로 지켜요.",
@@ -401,10 +401,10 @@ def prep_section():
     body = ('<p class="mix-lead">AI가 일하기 전에 먼저 읽는 <strong>업무 매뉴얼</strong>이에요. inlineAI_실습 안에 들어 있어서 폴더를 초대하면 같이 들어가요. '
             '우리 학교에 쓸 땐 <strong>04 학교기본정보</strong>만 고치면 돼요.</p>'
             f'<div class="key-grid hz">{"".join(f"<div class=\"key-item\"><span class=\"key-label\">{E(a)}</span><p class=\"key-text\">{b}</p></div>" for a, b in hz_items)}</div>'
-            f'<div class="practice-download row"><a class="btn btn-primary" href="{url(hz)}" download>하네스 폴더만 받기 (zip · {kb(hz)}) ↓</a></div>'
-            '<p class="mix-lead">쓰는 법은 한 줄: <strong>"00_하네스_공문서 폴더의 규칙을 따라서, 열려 있는 계획서로 기안문 본문을 써 줘."</strong></p>'
+            f'<div class="practice-download row"><a class="btn btn-primary" href="{url(hz)}" download>업무 지침 폴더만 받기 (zip · {kb(hz)}) ↓</a></div>'
+            '<p class="mix-lead">쓰는 법은 한 줄: <strong>"00_업무지침 폴더의 규칙을 따라서, 열려 있는 계획서로 기안문 본문을 써 줘."</strong></p>'
             f'<div class="prompt-list">{copy_row("02 전체판", full, "중요한 문서를 맡길 때 첫 메시지에 함께")}</div>')
-    parts.append(mix("00_하네스_공문서 — AI의 업무 매뉴얼", body, "🧭 하네스"))
+    parts.append(mix("00_업무지침 — AI의 업무 매뉴얼", body, "🧭 업무 지침"))
     acts = '<a class="btn btn-primary" href="https://inline-ai.com" target="_blank" rel="noopener">inline AI 받기 ↗</a>'
     return lecture("s00", "00", "준비하기<br />AI를 내 컴퓨터에", "설치부터 폴더 초대, 지시사항까지. 여섯 단계면 끝나요.", "tile-flow", False, "".join(parts), acts)
 
@@ -421,7 +421,7 @@ def cowork_section():
     parts = []
     parts.append(key_block("상위 호환 — 오늘 습관이 그대로 통해요", "일단 던지기 · 내 컴퓨터에 초대 · 양식 주기는 같고, <strong>프로젝트·스킬·예약·커넥터</strong>가 더해져요.",
                            [("오늘 한 일 그대로", "폴더 정리 · 양식 맞추기 · 문서 쓰기를 <strong>같은 한 줄</strong>로"),
-                            ("스킬", "00_하네스를 <strong>스킬로 올리면</strong> 늘 같은 규칙으로"),
+                            ("스킬", "00_업무 지침를 <strong>스킬로 올리면</strong> 늘 같은 규칙으로"),
                             ("예약", "<strong>매주 월요일 아침</strong> 같은 때 알아서")],
                            "솔직히: 한글 직접 편집은 inline AI가 더 편하고, 코워크는 <strong>유료(Pro 이상)</strong>예요."))
     parts.append(mix("inline AI ↔ 클로드 코워크", f'<div class="table-wrap"><table class="cmp"><thead><tr><th></th><th>inline AI</th><th>클로드 코워크</th><th></th></tr></thead><tbody>{rows}</tbody></table></div>', "비교"))
@@ -451,14 +451,14 @@ def cowork_section():
             MISSING.append(SHOT + p)
     if not exists(sk):
         MISSING.append(sk)
-    body = ('<p class="mix-lead">00_하네스_공문서의 <strong>클로드_스킬용</strong> 폴더(SKILL.md + references)를 zip으로 올려요. 아래 zip은 바로 올릴 수 있게 묶어 두었어요.</p>'
+    body = ('<p class="mix-lead">00_업무지침의 <strong>클로드_스킬용</strong> 폴더(SKILL.md + references)를 zip으로 올려요. 아래 zip은 바로 올릴 수 있게 묶어 두었어요.</p>'
             f'<div class="practice-download row"><a class="btn btn-primary" href="{url(sk)}" download>스킬 zip 받기 ({kb(sk)}) ↓</a></div>'
             + seq +
             '<ul class="plain-steps"><li><strong>내 항목</strong>에 <code>school-official-docs</code>가 보이면 성공</li>'
             '<li><strong>설정 → 기능 → 코드 실행 및 파일 생성</strong>이 켜져 있어야 스킬이 돌아가요</li>'
             '<li>"작년 계획서 올해로 바꿔 줘"처럼 시키면 스킬이 저절로 쓰여요</li>'
             '<li>마음에 드는 결과가 나오면 <strong>"스킬로 저장해 줘"</strong> 한 줄로 업무 매뉴얼이 남아요</li></ul>')
-    parts.append(mix("하네스를 스킬로 올리기", body, "🧩 스킬"))
+    parts.append(mix("업무 지침를 스킬로 올리기", body, "🧩 스킬"))
     parts.append(mix("예약 — 정해진 때 알아서",
                      '<p class="mix-lead">왼쪽 <strong>예약됨 → 새 작업</strong>으로 "매주 월요일 아침 다운로드 폴더 정리"처럼 맡겨요. 예시 카드는 누르면 바로 만들어질 수 있으니 구경만 해요.</p>'
                      + img(SHOT + "claude/22_scheduled_1280.png", "예약된 작업 화면", "guide-shot md"), "⏰ 예약"))
@@ -492,7 +492,7 @@ def wrap_section():
                      '<p class="mix-lead">요즘 AI는 오래 걸려도 <strong>검토할 게 적은</strong> 쪽으로 가요. 기다리지 말고, 시켜 두고 다른 일을 하세요.</p></div>'
                      + yt("ffSpxalmi9E", "사람처럼 컴퓨터를 쓰는 AI (쇼츠)", short=True) + "</div>", "▶ 쇼츠"))
     parts.append(key_block("오늘 가져가는 것", None,
-                           [("00_하네스_공문서", "04 학교기본정보만 고치면 <strong>내일부터</strong>"),
+                           [("00_업무지침", "04 학교기본정보만 고치면 <strong>내일부터</strong>"),
                             ("프롬프트 저장소", "이 페이지에서 <strong>복사</strong>해서 그대로"),
                             ("정답 파일", "결과와 <strong>나란히</strong> 놓고 비교")]))
     acts = '<a class="btn btn-primary" href="download/inlineAI_실습.zip" download>실습 자료 전체 ↓</a>'
@@ -603,7 +603,7 @@ def page():
       <div class="footer-col"><h4>실습 목차</h4>{toc2}</div>
       <div class="footer-col"><h4>자료</h4>
         <a href="{url(allzip)}" download>실습 자료 전체 zip</a>
-        <a href="{url("download/폴더별/00_하네스_공문서.zip")}" download>하네스 폴더 zip</a>
+        <a href="{url("download/폴더별/00_업무지침.zip")}" download>업무 지침 폴더 zip</a>
         <a href="prompts.html">프롬프트 모음(한 페이지)</a>
         <a href="lecture.html">강의 화면</a>
       </div>

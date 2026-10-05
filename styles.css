@@ -1175,7 +1175,7 @@ code { font-family: ui-monospace, Consolas, monospace; background: var(--canvas)
 .guide-shot a { display: block; }
 .guide-mix .guide-shot.md { max-width: 760px; }
 
-/* 하네스 7칸 */
+/* 업무 지침 7칸 */
 .key-grid.hz .key-item { background: var(--soft-cloud); padding: var(--sp-md) var(--sp-lg); border-radius: var(--rounded-sm); }
 .guide-mix .key-grid.hz { margin: var(--sp-lg) 0; }
 .guide-mix .key-grid.hz .key-text { font-size: 16px; }
