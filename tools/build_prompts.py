@@ -1,4 +1,4 @@
-# materials/0X_*/프롬프트.txt 와 00_하네스 짧은판으로 prompts.html(복사 버튼 페이지)을 만든다
+# prompts/0X_*.txt 와 00_하네스 짧은판으로 prompts.html(복사 버튼 페이지)을 만든다
 import glob, html, os, re, sys
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -62,8 +62,8 @@ sections.append('<section id="s00"><h2><span class="no">00</span>준비: AI 지�
                 f'<button class="cp" data-for="p00-1-x" type="button">📋 복사</button></div><pre id="p00-1-x">{html.escape(short)}</pre></div></section>')
 nav.append('<a href="#s00">00 준비</a>')
 
-for p in sorted(glob.glob(os.path.join(M, "0[1-8]_*", "프롬프트.txt"))):
-    folder = os.path.basename(os.path.dirname(p))
+for p in sorted(glob.glob(os.path.join(ROOT, "prompts", "0[1-8]_*.txt"))):
+    folder = os.path.splitext(os.path.basename(p))[0]
     no = folder[:2]
     title, blocks = parse(read(p))
     name = re.sub(r"^\[\d+\]\s*", "", title)
